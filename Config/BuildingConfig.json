@@ -1,0 +1,61 @@
+{
+	"buildingName": "Riverside Residence",
+	"floors": [
+		{
+			"floorNumber": 1,
+			"displayName": "Ground Floor",
+			"focusLocation": { "x": 0.0, "y": -1200.0, "z": 300.0 },
+			"apartments": [
+				{
+					"id": "A-101",
+					"status": "Available",
+					"area": 54.3,
+					"focusLocation": { "x": -400.0, "y": -600.0, "z": 150.0 },
+					"focusRotation": { "pitch": -10.0, "yaw": 90.0, "roll": 0.0 }
+				},
+				{
+					"id": "A-102",
+					"status": "Sold",
+					"area": 71.8,
+					"focusLocation": { "x": 400.0, "y": -600.0, "z": 150.0 },
+					"focusRotation": { "pitch": -10.0, "yaw": 90.0, "roll": 0.0 }
+				}
+			]
+		},
+		{
+			"floorNumber": 2,
+			"displayName": "Second Floor",
+			"focusLocation": { "x": 0.0, "y": -1200.0, "z": 600.0 },
+			"apartments": [
+				{
+					"id": "A-201",
+					"status": "Available",
+					"area": 54.3,
+					"focusLocation": { "x": -400.0, "y": -600.0, "z": 450.0 },
+					"focusRotation": { "pitch": -10.0, "yaw": 90.0, "roll": 0.0 }
+				},
+				{
+					"id": "A-202",
+					"status": "Available",
+					"area": 88.0,
+					"focusLocation": { "x": 400.0, "y": -600.0, "z": 450.0 },
+					"focusRotation": { "pitch": -10.0, "yaw": 90.0, "roll": 0.0 }
+				}
+			]
+		},
+		{
+			"floorNumber": 3,
+			"displayName": "Penthouse",
+			"focusLocation": { "x": 0.0, "y": -1200.0, "z": 900.0 },
+			"apartments": [
+				{
+					"id": "A-301",
+					"status": "Sold",
+					"area": 142.5,
+					"focusLocation": { "x": 0.0, "y": -600.0, "z": 750.0 },
+					"focusRotation": { "pitch": -12.0, "yaw": 90.0, "roll": 0.0 }
+				}
+			]
+		}
+	]
+}

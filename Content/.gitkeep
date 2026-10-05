@@ -1,0 +1,5 @@
+# Content/
+
+Binary UE assets (maps, materials, Blueprint subclasses, UMG widget designs) live here.
+They are authored in-editor on top of the C++ classes in Source/ and are intentionally
+omitted from this skeleton — see the repository README, section "What is / isn't in this repo".

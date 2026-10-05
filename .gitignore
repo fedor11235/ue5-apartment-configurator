@@ -1,0 +1,28 @@
+# Unreal Engine generated / transient folders
+Binaries/
+Build/
+DerivedDataCache/
+Intermediate/
+Saved/
+.vs/
+.vscode/
+.idea/
+
+# Generated solution / project files
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+*.xcodeproj/
+*.xcworkspace/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Content note:
+# Binary .uasset / .umap assets are intentionally NOT committed in this skeleton —
+# see README (section "What is / isn't in this repo"). The playable scene, Blueprint
+# subclasses and UMG widget designs are built in-editor on top of the C++ classes here.
