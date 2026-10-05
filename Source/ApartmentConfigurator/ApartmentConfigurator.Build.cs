@@ -6,6 +6,11 @@ public class ApartmentConfigurator : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
+		// Sources live directly under the module root (no Public/Private split),
+		// and headers include each other module-root-relative (e.g. "Data/ConfiguratorTypes.h").
+		// Expose the module root so those includes resolve.
+		PublicIncludePaths.Add(ModuleDirectory);
+
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
 			"Core",

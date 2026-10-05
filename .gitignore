@@ -23,6 +23,7 @@ Saved/
 Thumbs.db
 
 # Content note:
-# Binary .uasset / .umap assets are intentionally NOT committed in this skeleton —
-# see README (section "What is / isn't in this repo"). The playable scene, Blueprint
-# subclasses and UMG widget designs are built in-editor on top of the C++ classes here.
+# The playable scene (Content/Maps/L_Configurator.umap) and material
+# (Content/Materials/M_Apartment.uasset) ARE committed — they are generated from code by
+# Scripts/gen_configurator.py and can be regenerated at any time (see README). The UI itself
+# is built entirely in C++ (RebuildWidget), so no WBP design assets are needed.

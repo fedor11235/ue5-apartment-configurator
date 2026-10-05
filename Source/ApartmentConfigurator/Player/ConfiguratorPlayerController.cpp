@@ -18,6 +18,10 @@ AConfiguratorPlayerController::AConfiguratorPlayerController()
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
+
+	// The HUD is a code-built widget, so default to the C++ class directly. A Blueprint
+	// subclass can still override this in the editor if desired.
+	HUDWidgetClass = UConfiguratorHUDWidget::StaticClass();
 }
 
 void AConfiguratorPlayerController::BeginPlay()

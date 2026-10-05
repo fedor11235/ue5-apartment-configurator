@@ -7,14 +7,16 @@
 class UFloorPanelWidget;
 class UApartmentCardWidget;
 class UButton;
+class UTextBlock;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBackRequested);
 
 /**
  * Root screen widget. Aggregates the floor panel, the apartment card and the global
  * "Back" button, and exposes the sub-widgets so the player controller can wire signals.
+ * The whole hierarchy is built in code (RebuildWidget); no Blueprint design asset required.
  */
-UCLASS(Abstract)
+UCLASS()
 class APARTMENTCONFIGURATOR_API UConfiguratorHUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
@@ -31,15 +33,16 @@ public:
 	void SetBackEnabled(bool bEnabled);
 
 protected:
+	virtual TSharedRef<SWidget> RebuildWidget() override;
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY()
 	TObjectPtr<UFloorPanelWidget> FloorPanel;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY()
 	TObjectPtr<UApartmentCardWidget> ApartmentCard;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY()
 	TObjectPtr<UButton> BackButton;
 
 private:

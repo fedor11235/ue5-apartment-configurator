@@ -19,7 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnApartmentClicked, AApartmentActor
  * Click detection relies on APlayerController::bEnableClickEvents, enabled by
  * AConfiguratorPlayerController.
  */
-UCLASS(Abstract, Blueprintable)
+UCLASS(Blueprintable)
 class APARTMENTCONFIGURATOR_API AApartmentActor : public AActor
 {
 	GENERATED_BODY()
@@ -31,6 +31,13 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Configurator|Interaction")
 	FOnApartmentClicked OnApartmentClicked;
 
+	/**
+	 * Id of the config entry this placed actor represents (set per-instance in the level).
+	 * The player controller uses it to look up the matching apartment in the loaded JSON.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configurator|Interaction")
+	FString ApartmentId;
+
 	/** Bind the actor to its data. Applies the correct initial visual state. */
 	UFUNCTION(BlueprintCallable, Category = "Configurator|Interaction")
 	void InitializeFromData(const FApartmentData& InData);
@@ -39,7 +46,7 @@ public:
 	const FApartmentData& GetData() const { return Data; }
 
 	UFUNCTION(BlueprintCallable, Category = "Configurator|Interaction")
-	const FString& GetApartmentId() const { return Data.Id; }
+	const FString& GetApartmentId() const { return ApartmentId; }
 
 	UFUNCTION(BlueprintCallable, Category = "Configurator|Interaction")
 	bool IsInteractable() const { return bInteractable; }

@@ -9,28 +9,29 @@
 
 ---
 
-## ⚠️ Что в этом репозитории есть, а чего нет
+## Что в этом репозитории
 
-Этот репозиторий — **C++-каркас проекта** (вся логика архитектуры: загрузка данных, камера,
-взаимодействие, UI-классы). Он задаёт модульную структуру, в которой C++ держит поведение,
-а визуальная часть (сцена, 3D-модель здания, дизайн UMG-виджетов, Blueprint-наследники)
-достраивается в редакторе Unreal.
+Полностью **запускаемый проект**: C++-логика + готовый уровень со сценой. Открыть и нажать Play.
 
-**Есть (в `Source/` + `Config/`):**
-- вся C++-логика: subsystem загрузки JSON, контроллер камеры, кликабельные акторы квартир,
-  базовые классы UMG-виджетов, player controller-оркестратор, game mode;
-- пример данных `Config/BuildingConfig.json`;
-- `.uproject`, `Build.cs`, `Target.cs`, конфиги проекта.
+- Вся C++-логика: subsystem загрузки JSON, контроллер камеры, кликабельные акторы квартир,
+  UMG-виджеты, player controller-оркестратор, game mode.
+- **UI строится целиком в C++** (`RebuildWidget()` в каждом виджете) — без WBP-дизайн-ассетов и
+  без `BindWidget`. Любой виджет можно при желании переопределить Blueprint-наследником, но для
+  запуска это не требуется.
+- Готовый контент (генерируется скриптом `Scripts/gen_configurator.py`, в репозитории закоммичен):
+  - `Content/Maps/L_Configurator.umap` — сцена: свет, пол, орбитальная камера и 5 акторов квартир,
+    расставленных по координатам из JSON, каждому выставлен `ApartmentId`;
+  - `Content/Materials/M_Apartment.uasset` — unlit-материал с параметрами `BaseColor` (вектор) и
+    `Opacity` (скаляр), которые актор гоняет через динамический material instance.
+- Пример данных `Config/BuildingConfig.json`; `.uproject`, `Build.cs`, `Target.cs`, конфиги.
 
-**Нет (создаётся в редакторе — бинарные `.uasset`/`.umap`, в git не коммитятся):**
-- уровень `.umap` со сценой и расставленными акторами квартир;
-- 3D-модель/меши здания и материал с параметрами `BaseColor` / `Opacity`;
-- Blueprint-наследники C++-классов (`BP_ApartmentActor`, `WBP_FloorPanel`, `WBP_ApartmentCard`,
-  `WBP_FloorButton`, `WBP_HUD`) и дизайн виджетов;
-- демонстрационное видео 1–2 мин.
+**Остаётся сделать вручную (вне кода):** записать демонстрационное видео 1–2 мин.
 
-Раздел [«Сборка в редакторе»](#сборка-в-редакторе-шаги-художникаdevа) ниже — точная инструкция,
-как довести каркас до запускаемого проекта.
+> Контент можно пересоздать из кода в любой момент:
+> ```
+> UnrealEditor-Cmd ApartmentConfigurator.uproject -run=pythonscript \
+>   -script="Scripts/gen_configurator.py" -unattended -nullrhi
+> ```
 
 ---
 
@@ -49,7 +50,7 @@ Source/ApartmentConfigurator/
 │  └─ ConfiguratorCameraController.*  3 режима, плавная интерполяция, стек «назад», орбита
 ├─ Interaction/   3D-взаимодействие
 │  └─ ApartmentActor.*              кликабельный актор квартиры: подсветка, статус, фильтр
-├─ UI/            UMG (базовые C++-классы)
+├─ UI/            UMG (виджеты строятся целиком в C++ через RebuildWidget)
 │  ├─ FloorButtonWidget.*           одна кнопка этажа
 │  ├─ FloorPanelWidget.*            панель этажей (генерация кнопок) + чекбокс «скрыть проданные»
 │  ├─ ApartmentCardWidget.*         карточка квартиры: ID / площадь / статус / «Забронировать»
@@ -84,6 +85,12 @@ Source/ApartmentConfigurator/
 - **UI развязан от логики.** Виджеты только отображают данные и поднимают делегаты
   (`OnFloorSelected`, `OnHideSoldChanged`, `OnBookClicked`, `OnBackRequested`). Реакцию на них
   задаёт player controller.
+- **UI целиком в коде.** Каждый виджет строит своё дерево в `RebuildWidget()`
+  (`WidgetTree->ConstructWidget<…>`). Это убирает зависимость от ручной вёрстки WBP и `BindWidget`:
+  проект запускается «из коробки», а дизайн при желании переопределяется Blueprint-наследником.
+- **Связывание акторов с данными по `ApartmentId`.** У `AApartmentActor` есть редактируемое поле
+  `ApartmentId`; на старте player controller находит все акторы на уровне и сопоставляет их с
+  записями конфига по этому id (`BindApartmentActors`).
 
 ---
 
@@ -116,27 +123,25 @@ Source/ApartmentConfigurator/
 
 ---
 
-## Сборка в редакторе (шаги художника/dev-а)
+## Запуск
 
-1. **Генерация проектных файлов.** ПКМ по `ApartmentConfigurator.uproject` → *Generate Visual
-   Studio / Xcode project files*; собрать C++-модуль (цель `ApartmentConfiguratorEditor`).
-2. **Материал.** Создать `M_Apartment` с векторным параметром `BaseColor` и скалярным `Opacity`
-   (translucent/masked), назначить на меш квартиры.
-3. **Blueprint-наследники C++-классов:**
-   - `BP_ApartmentActor` ← `AApartmentActor` (задать меш + материал-слот 0);
-   - `WBP_FloorButton` ← `UFloorButtonWidget` (привязать `FloorButton`, `FloorLabel`);
-   - `WBP_FloorPanel` ← `UFloorPanelWidget` (привязать `FloorButtonContainer`, `HideSoldCheckBox`;
-     задать `FloorButtonClass = WBP_FloorButton`);
-   - `WBP_ApartmentCard` ← `UApartmentCardWidget` (привязать `IdText`,`AreaText`,`StatusText`,`BookButton`,`CloseButton`);
-   - `WBP_HUD` ← `UConfiguratorHUDWidget` (вложить `WBP_FloorPanel`, `WBP_ApartmentCard`; привязать `BackButton`);
-   - `BP_ConfiguratorPlayerController` ← `AConfiguratorPlayerController` (задать `HUDWidgetClass = WBP_HUD`);
-   - `BP_ConfiguratorGameMode` ← `AConfiguratorGameMode` (задать PlayerController = `BP_ConfiguratorPlayerController`).
-4. **Сцена.** Создать уровень, поставить модель здания, добавить `AConfiguratorCameraController`,
-   расставить `BP_ApartmentActor` по квартирам и выставить каждому `id`, совпадающий с JSON.
-   Выставить `GlobalDefaultGameMode = BP_ConfiguratorGameMode` (или оставить C++-класс из
-   `DefaultEngine.ini`).
-5. **Данные.** При необходимости поправить `Config/BuildingConfig.json`.
-6. **Запуск.** Play In Editor: Genplan → клик по этажу → клик по квартире → карточка → «Назад».
+1. **Собрать C++** (один раз). Цель `ApartmentConfiguratorEditor`:
+   ```
+   "<UE>/Engine/Build/BatchFiles/Mac/Build.sh" ApartmentConfiguratorEditor Mac Development \
+     -Project="ApartmentConfigurator.uproject" -WaitMutex
+   ```
+   (на Windows — `Build.bat`). Либо открыть `.uproject` и согласиться на сборку модуля.
+2. **Открыть** `ApartmentConfigurator.uproject` — стартовая карта `L_Configurator` уже прописана
+   в `DefaultEngine.ini`.
+3. **Play In Editor.** Сценарий: Genplan (драг мыши — орбита вокруг здания) → клик по кнопке
+   этажа слева → клик по квартире-боксу в сцене → открывается карточка (ID / площадь / статус /
+   «Book») → «< Back». Чекбокс «Hide sold» затемняет и выключает проданные квартиры.
+4. **Данные.** Правка `Config/BuildingConfig.json` меняет этажи/квартиры. Если в сцене нужны
+   акторы под новые id — перегенерировать уровень скриптом `Scripts/gen_configurator.py`
+   (см. выше) или расставить `AApartmentActor` вручную, выставив им `ApartmentId`.
+
+GameMode задаётся C++-классом `AConfiguratorGameMode` через `GlobalDefaultGameMode` в
+`DefaultEngine.ini`; player controller по умолчанию поднимает C++-HUD (`HUDWidgetClass`).
 
 ---
 

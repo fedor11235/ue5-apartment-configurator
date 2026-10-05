@@ -11,9 +11,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloorButtonClicked, int32, FloorN
 
 /**
  * A single auto-generated floor button. One instance is spawned per floor by
- * UFloorPanelWidget. The Button/Label are bound from the Blueprint-designed widget.
+ * UFloorPanelWidget. The Button/Label are constructed in code (RebuildWidget) so the
+ * widget needs no Blueprint design asset.
  */
-UCLASS(Abstract)
+UCLASS()
 class APARTMENTCONFIGURATOR_API UFloorButtonWidget : public UUserWidget
 {
 	GENERATED_BODY()
@@ -27,12 +28,13 @@ public:
 	int32 GetFloorNumber() const { return FloorNumber; }
 
 protected:
+	virtual TSharedRef<SWidget> RebuildWidget() override;
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY()
 	TObjectPtr<UButton> FloorButton;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY()
 	TObjectPtr<UTextBlock> FloorLabel;
 
 private:

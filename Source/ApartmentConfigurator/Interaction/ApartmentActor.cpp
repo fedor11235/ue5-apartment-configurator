@@ -3,6 +3,7 @@
 
 #include "Components/StaticMeshComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "UObject/ConstructorHelpers.h"
 
 AApartmentActor::AApartmentActor()
 {
@@ -14,6 +15,14 @@ AApartmentActor::AApartmentActor()
 	// Required for OnClicked / cursor-over events to fire on this primitive.
 	Mesh->SetMobility(EComponentMobility::Movable);
 	Mesh->bVisibleInReflectionCaptures = true;
+
+	// Default to the engine cube so a freshly placed actor is immediately visible.
+	// The level may override the mesh/material per instance.
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube.Cube"));
+	if (CubeMesh.Succeeded())
+	{
+		Mesh->SetStaticMesh(CubeMesh.Object);
+	}
 }
 
 void AApartmentActor::BeginPlay()

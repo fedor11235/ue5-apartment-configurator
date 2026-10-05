@@ -14,8 +14,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCardClosed);
 /**
  * Detail card for a single apartment: shows id, area and status, exposes a "Book" button
  * (disabled when the unit is sold) and a close button. Shown when an apartment is focused.
+ * Layout is constructed in code (RebuildWidget); no Blueprint design asset is required.
  */
-UCLASS(Abstract)
+UCLASS()
 class APARTMENTCONFIGURATOR_API UApartmentCardWidget : public UUserWidget
 {
 	GENERATED_BODY()
@@ -35,21 +36,25 @@ public:
 	void Hide();
 
 protected:
+	virtual TSharedRef<SWidget> RebuildWidget() override;
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY()
 	TObjectPtr<UTextBlock> IdText;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY()
 	TObjectPtr<UTextBlock> AreaText;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY()
 	TObjectPtr<UTextBlock> StatusText;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY()
 	TObjectPtr<UButton> BookButton;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY()
+	TObjectPtr<UTextBlock> BookLabel;
+
+	UPROPERTY()
 	TObjectPtr<UButton> CloseButton;
 
 private:
